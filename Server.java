@@ -90,8 +90,4 @@ public class Server implements Runnable{
 		}
 		return false;
 	}
-
-	public void waitForInput(BufferedReader in){
-
-	}
 }

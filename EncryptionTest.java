@@ -9,10 +9,12 @@ public class EncryptionTest {
 	
 	
 	public static void main(String[] args) throws IOException {
-		String test = "boogers";
+		String test = "testtext:";
 		System.out.println(test);
-		String encrypted = Encryption.encrypt(test, "asdfasdf");
+		
+		int[] encrypted = Encryption.encrypt(test, "asdfasdf");
 		System.out.println("Encrypted: "+encrypted);
+		
 		String decrypted = Encryption.decrypt(encrypted, "asdfasdf");
 		System.out.println(decrypted);
 	}

@@ -2,62 +2,60 @@ import java.io.*;
 
 public class Encryption {
 
-	public static String encrypt(String data, String key){
+	public static int[] encrypt(String data, String key){
 		//Append extra '\0' if data.length() is odd
 		if (data.length()%2 != 0){
 			data += '\0'; 
 		}
-System.out.println(key);
+		
 		int[] formattedKey = formatKey(key);
 
-		String ciphertext = new String();
 		int[] tempData = {0,0};
-
+		
+		int result[] = new int[data.length()];
+		int j = 0;
 		//pass string 2 chars at a time to C encryption routine
-		System.out.println("Encrypting");
 		for(int i=0; i<data.length(); i+=2)
 		{
-			tempData[0] = data.charAt(i);
-			tempData[1] = data.charAt(i+1);
-
-//System.out.println("q " + tempData[0]+ ""+tempData[1]);
-			
+			tempData[0] = (int)data.charAt(i);
+			tempData[1] = (int)data.charAt(i+1);
+			System.out.println(tempData[0]);
+			System.out.println(tempData[1]);
 			System.loadLibrary("encryption");
-			int result[] = encrypt(tempData, formattedKey);
+			int tempresult[] = encrypt(tempData, formattedKey);
 			
-
-//System.out.println("a "+result[0] + "" + result[1]);
-//System.out.println(intArrayToString(result));
-
-			ciphertext += intArrayToString(result);
+			result[j] = tempresult[0];
+			result[j+1] = tempresult[1];
+			j+=2;
 		}
 		System.out.println("");
-		return ciphertext;
+		for (int k=0; k < result.length; k++)
+			System.out.println(result[k]);
+		return result;
 	}
 
-	public static String decrypt(String data, String key){
-
+	
+	public static String decrypt(int[] data, String key){
+		for (int k=0; k < data.length; k++)
+			System.out.println(data[k]);
+		
 		int[] formattedKey = formatKey(key);
 
 		String deciphertext = new String();
 		int[] tempData = {0,0};
-
+System.out.println("");
 		//pass string 2 chars at a time to C decryption routine
-		System.out.println("Decrypting");
-		for(int i=0; i<data.length(); i+=4)
+		for(int i=0; i<data.length; i+=2)
 		{
-			tempData = stringToIntArray(data.substring(i, i+4));
-
-
-//System.out.println("q " + tempData[0]+ ""+tempData[1]);
+			tempData[0] = data[i];
+			tempData[1] = data[i+1];
 			
 			System.loadLibrary("encryption");
-			int result[] = decrypt(tempData, formattedKey);
-
-//System.out.println("a "+result[0] + "" + result[1]);
-//System.out.println(intArrayToString(result));
-			
-			deciphertext += intArrayToString(result);
+			int tempresult[] = decrypt(tempData, formattedKey);
+			System.out.println(tempresult[0]);
+			System.out.println(tempresult[1]);
+			deciphertext += (char)tempresult[0];
+			deciphertext += (char)tempresult[1];
 		}
 		
 		//strip extra '\0' if it was added
@@ -90,11 +88,11 @@ System.out.println(key);
 		
 		char[] result = {0,0,0,0};
 		result[0] = (char) (a & 0xFF);  
-		a = a << 16;  
+		a = a >> 16;  
 		result[1] = (char) (a & 0xFF);  
 		
 		result[2] = (char) (a & 0xFF);  
-		b = b << 16;  
+		b = b >> 16;  
 		result[3] = (char) (a & 0xFF);  
 		
 		return new String(result);
@@ -104,8 +102,8 @@ System.out.println(key);
 		//takes in string of length 4 and writes result to 2 ints
 		int result[] = {0,0};
 		
-		result[0] = (((int)encrypted.charAt(0)) << 16) | (encrypted.charAt(1) & 0xffff);
-		result[1] = (((int)encrypted.charAt(2)) << 16) | (encrypted.charAt(3) & 0xffff);
+		result[0] = (((int)encrypted.charAt(1)) << 16) | (encrypted.charAt(0) & 0xffff);
+		result[1] = (((int)encrypted.charAt(3)) << 16) | (encrypted.charAt(2) & 0xffff);
 		
 		return result;
 	}

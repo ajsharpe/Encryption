@@ -7,6 +7,6 @@ all:
 	@echo "***Setting LD_LIBRARY_PATH in the makefile is not working. It must be set manually in the terminal before running the application."
 
 clean:
-	rm -f *.class *.so
+	rm -f *.class *.so Encryption.h
 
 
