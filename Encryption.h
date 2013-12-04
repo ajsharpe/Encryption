@@ -13,7 +13,7 @@ extern "C" {
  * Signature: ([I[I)[I
  */
 JNIEXPORT jintArray JNICALL Java_Encryption_decrypt
-  (JNIEnv *, jobject, jintArray, jintArray);
+  (JNIEnv *, jclass, jintArray, jintArray);
 
 /*
  * Class:     Encryption
@@ -21,7 +21,7 @@ JNIEXPORT jintArray JNICALL Java_Encryption_decrypt
  * Signature: ([I[I)[I
  */
 JNIEXPORT jintArray JNICALL Java_Encryption_encrypt
-  (JNIEnv *, jobject, jintArray, jintArray);
+  (JNIEnv *, jclass, jintArray, jintArray);
 
 #ifdef __cplusplus
 }
