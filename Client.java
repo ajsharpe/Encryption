@@ -4,6 +4,9 @@ import java.net.*;
 public class Client {
 
 	private static String currentUser;
+	private static PrintWriter out;
+	private static BufferedReader in;
+	
 	
 	public static void main(String[] args) throws IOException {
         
@@ -18,16 +21,18 @@ public class Client {
 			
 			
 			Socket clientSocket = new Socket(InetAddress.getByName("localhost"), 16000);
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(clientSocket.getInputStream()));
+			out = new PrintWriter(clientSocket.getOutputStream(), true);
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 			BufferedReader stdIn =
 				new BufferedReader(new InputStreamReader(System.in));
 			String fromServer;
 			String fromUser;
 			
-			out.println("Username:" + args[0]);
+			if (!authenticate(currentUser)){
+				System.out.println("Bad username, exiting.");
+				System.exit(1);
+			}
 			
 			while ((fromServer = in.readLine()) != null) {
 				System.out.println("Server: " + fromServer);
@@ -46,6 +51,18 @@ public class Client {
 		} catch (IOException e) {
 			System.err.println("The connection to localhost experienced an I/O error.");
 			System.exit(1);
+		}
+	}
+	
+	private static boolean authenticate(String user) throws IOException{
+		out.println("Username:" + currentUser);
+		String fromServer;
+		if ((fromServer = in.readLine()) != null && fromServer.length() > 9 
+				&& fromServer.substring(0, 9).equals("Welcome, ")){
+			return true;
+		}
+		else{
+			return false;
 		}
 	}
 }
