@@ -70,11 +70,9 @@ public class Client {
 	}
 	
 	private static void toServer(String str){
-		int[] encryptedData = Encryption.encrypt(str, key);
-		
-		String send = Encryption.intArrayToString(encryptedData);
-		System.out.println(send);
-		out.println(send);//send);//Encryption.intArrayToString(encryptedData));
+		String encryptedData = Encryption.encrypt(str, key);
+		System.out.println("Encrypted: " + encryptedData);
+		out.println(encryptedData);//send);//Encryption.intArrayToString(encryptedData));
 		//b.clear();
 	}
 }

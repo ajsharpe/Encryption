@@ -53,11 +53,7 @@ public class Server implements Runnable{
 			while(currentUser != null){
 				out.println(currentUser + " enter a command:");
 				if ((fromUser = in.readLine()) != null){
-					/*ByteBuffer b = ByteBuffer.allocate(2048*8);
-					b.put(fromUser); = Encryption.decrypt(Encryption.stringToIntArray(fromUser), currentKey);
-					*/
-					int[] encryptedData = Encryption.stringToIntArray(fromUser);
-					String decrypted = Encryption.decrypt(encryptedData, currentKey);
+					String decrypted = Encryption.decrypt(fromUser, currentKey);
 					System.out.println(currentUser + ": " + decrypted);
 					if (decrypted.equals("end")){
 						out.println("Bye, "+ currentUser + "!");

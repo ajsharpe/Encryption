@@ -12,7 +12,7 @@ public class EncryptionTest {
 		String test = "testtext:";
 		System.out.println(test);
 		
-		int[] encrypted = Encryption.encrypt(test, "asdfasdf");
+		String encrypted = Encryption.encrypt(test, "asdfasdf");
 		System.out.println("Encrypted: "+encrypted);
 		
 		String decrypted = Encryption.decrypt(encrypted, "asdfasdf");
