@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.*;
 import java.net.*;
 
 public class Client {
@@ -43,7 +44,8 @@ public class Client {
 				fromUser = stdIn.readLine();
 				if (fromUser != null) {
 					System.out.println("Client: " + fromUser);
-					out.println(fromUser);
+					//out.println(fromUser);
+					toServer(fromUser);
 				}
 			}
 		} catch (UnknownHostException e) {
@@ -69,6 +71,10 @@ public class Client {
 	
 	private static void toServer(String str){
 		int[] encryptedData = Encryption.encrypt(str, key);
-		out.println(encryptedData);
+		
+		String send = Encryption.intArrayToString(encryptedData);
+		System.out.println(send);
+		out.println(send);//send);//Encryption.intArrayToString(encryptedData));
+		//b.clear();
 	}
 }
