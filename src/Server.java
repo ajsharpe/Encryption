@@ -71,6 +71,7 @@ public class Server implements Runnable{
 						decrypted = Encryption.decrypt(fromUser, currentKey);
 						int len = decrypted.length();
 						if (len > 1 && decrypted.charAt(len-1) == '\0'){
+							decrypted = decrypted.substring(0, length-1);
 							break;
 						} else {
 							fromUser = in.readLine();

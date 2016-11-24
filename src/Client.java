@@ -77,7 +77,7 @@ public class Client {
 	}
 	
 	private static void toServer(String str){
-		String encryptedData = Encryption.encrypt(str, key);
+		String encryptedData = Encryption.encrypt(str+"\0", key);
 		System.out.println(str.length());
 		System.out.println("Encrypted: " + encryptedData + "\n");
 		out.println(encryptedData);
