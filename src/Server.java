@@ -53,6 +53,7 @@ public class Server implements Runnable{
 
 			String fromServer;
 			String fromUser;
+			String decrypted = "";
 
 			if (authenticate()){
 				out.println("Welcome, " + currentUser);
@@ -66,10 +67,22 @@ public class Server implements Runnable{
 			while(currentUser != null){
 				out.println(currentUser + " enter a command:");
 				if ((fromUser = in.readLine()) != null){
-					String decrypted = Encryption.decrypt(fromUser, currentKey);
+					while (fromUser != null) {
+						decrypted = Encryption.decrypt(fromUser, currentKey);
+						int len = decrypted.length();
+						if (len > 1 && decrypted.charAt(len-1) == '\0'){
+							break;
+						} else {
+							fromUser = in.readLine();
+						}
+					}
 					System.out.println(currentUser + ": " + decrypted + "\n");
+					fromUser = "";
+					
+					
 					if (decrypted.equals("end")){
 						out.println("Bye, "+ currentUser + "!");
+						System.out.println(currentUser + " disconnected.");
 						currentUser = null;
 						break;
 					}
@@ -85,9 +98,6 @@ public class Server implements Runnable{
 				System.out.println(e);
 				System.exit(1);
 			}
-		}
-		if (currentUser != null){
-			System.out.println(currentUser + " disconnected.");
 		}
 	}
 
@@ -110,7 +120,6 @@ public class Server implements Runnable{
 			if ((fromUser = in.readLine()) != null){
 				String encrypted = fromUser;
 				String decrypted = Encryption.decrypt(fromUser, db.get(currentUser));
-				System.out.println(decrypted);
 				if (decrypted != null && decrypted.length() > 9 
 						&& decrypted.substring(0,9).equals("Password:")){
 					//set key
@@ -121,7 +130,11 @@ public class Server implements Runnable{
 						decrypted = Encryption.decrypt(encrypted, db.get(currentUser));
 						currentKey = decrypted.substring(9);
 					}*/
-					
+					int length = currentKey.length();
+					if (length > 1 && currentKey.charAt(length-1)=='\0'){
+						currentKey = currentKey.substring(0, length-1);
+					}
+					System.out.println(decrypted.length());
 					//check the decrypted password against the database
 					if (currentKey.equals(db.get(currentUser))){
 						System.out.println("User " + currentUser + " connected.");

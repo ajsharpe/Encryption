@@ -3,6 +3,8 @@ import java.nio.*;
 
 public class Encryption {
 
+	//TODO: append \0 to all strings to null terminate similar to c, check for \0 on the server
+
 	public static String encrypt(String data, String key){
 		//Append extra '\0' if data.length() is odd
 		if (data.length()%2 != 0){
@@ -61,7 +63,8 @@ public class Encryption {
 		
 		//strip extra '\0' if it was added
 		int length = deciphertext.length();
-		if (deciphertext.charAt(length-1)=='\0'){
+		if (length > 1 && deciphertext.charAt(length-1)=='\0'
+				&& deciphertext.charAt(length-2)=='\0'){
 			deciphertext = deciphertext.substring(0, length-1);
 		}
 

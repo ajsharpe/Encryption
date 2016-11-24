@@ -41,7 +41,8 @@ public class Client {
 				if ((fromServer = in.readLine()) != null){
 					System.out.println("Server: " + fromServer);
 				}
-				if (fromServer.length() > 5 && fromServer.substring(0,5).equals("Bye, "))
+				if (fromServer!= null && fromServer.length() > 5 && 
+						fromServer.substring(0,5).equals("Bye, "))
 					break;
 				System.out.print("Client: ");
 				while( (fromUser = stdIn.readLine()) == null || fromUser.length() < 1);
@@ -66,16 +67,18 @@ public class Client {
 		out.println("Username:" + currentUser);
 		toServer("Password:" + key);
 		String fromServer;
-		if ((fromServer = in.readLine()) != null)/* && fromServer.length() > 9 
-				&& fromServer.substring(0, 9).equals("Welcome, "))*/{
+		if ((fromServer = in.readLine()) != null){
 			System.out.println(fromServer);
-			return true;
+			if (fromServer.length() > 9 && fromServer.substring(0, 9).equals("Welcome, ")){
+				return true;
+			}
 		}
 		return false;
 	}
 	
 	private static void toServer(String str){
 		String encryptedData = Encryption.encrypt(str, key);
+		System.out.println(str.length());
 		System.out.println("Encrypted: " + encryptedData + "\n");
 		out.println(encryptedData);
 	}
