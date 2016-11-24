@@ -1,9 +1,12 @@
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.nio.*;
+import java.net.*;
+import java.util.*;
 
 public class Server implements Runnable{
 
+
+	private HashMap<String, String> db = new HashMap<String, String>();
 	/* userIDs are hardcoded for now, but for maximum 
 	/  security should be read in from an encrypted file */
 	private String[] userIDs = {"aj", "scott", "peter parker"};
@@ -26,10 +29,19 @@ public class Server implements Runnable{
 
 		ServerSocket serverSocket = new ServerSocket(16000);
 		System.out.println("Waiting for clients...");
-
-		while (true) {
-			Socket client = serverSocket.accept();
-			new Thread(new Server(client)).start();
+		try{
+			while (true) {
+				Socket client = serverSocket.accept();
+				new Thread(new Server(client)).start();
+			}
+		} catch (UnknownHostException e) {
+			System.err.println("Unable to connect to localhost.");
+			System.exit(1);
+		} catch (IOException e) {
+			System.out.println(e);
+			System.exit(1);
+		} finally {
+			if (serverSocket != null) serverSocket.close();
 		}
 	}
 
@@ -62,13 +74,26 @@ public class Server implements Runnable{
 					}
 				}
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			System.out.println(e);
+			System.exit(1);
+		} finally {
+			try{
+				this.cleanUp();
+			} catch (IOException e) {
+				System.out.println(e);
+				System.exit(1);
+			}
 		}
 		if (currentUser != null){
 			System.out.println(currentUser + " disconnected.");
 		}
+	}
+
+	private void cleanUp() throws IOException{
+			if (in != null) in.close();
+			if (out != null) out.close();
+			if (client != null) client.close();
 	}
 
 	private boolean authenticate() throws IOException{
@@ -77,18 +102,34 @@ public class Server implements Runnable{
 		if ((fromUser = in.readLine()) != null && fromUser.length() > 9 
 				&& fromUser.substring(0,9).equals("Username:")){
 			currentUser = fromUser.substring(9);
-			if ((fromUser = in.readLine()) != null && fromUser.length() > 9 
+			if (!db.containsKey(currentUser)){
+				return false;
+			} else {
+				System.out.println("User " + currentUser + " connected.");
+				return true;
+			}
+			
+			
+			/*
+			if ((fromUser = in.readLine()) != null)
+				String decrypted = Encryption.decrypt(fromUser, currentKey);
+					fromUser.length() > 9 
 					&& fromUser.substring(0,9).equals("Password:")){
 				currentKey = fromUser.substring(9);
-				
-				for (int i = 0; i < userIDs.length; i++){
-					if (currentUser.equals(userIDs[i]) && currentKey.equals(keys[i])){
-						System.out.println("User " + currentUser + " connected.");
-						return true;
-					}
-				}
-			}
+			}*/
 		}
 		return false;
+	}
+
+	private void readUsers(File _db){
+		
+	}
+
+	private void printusers(){
+		Iterator it = db.entrySet().iterator();
+    	while (it.hasNext()) {
+        	Map.Entry entry = (Map.Entry)it.next();
+         	System.out.println("key is: "+ entry.getKey() + " & Value is: " + entry.getValue());
+      }
 	}
 }

@@ -18,10 +18,10 @@ public class Client {
         }
         currentUser = new String(args[0]);
         key = new String(args[1]);
-        
+        Socket clientSocket = null;
 		try {
 			//Initialize connection
-			Socket clientSocket = new Socket(InetAddress.getByName("localhost"), 16000);
+			clientSocket = new Socket(InetAddress.getByName("localhost"), 16000);
 			out = new PrintWriter(clientSocket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
@@ -54,12 +54,16 @@ public class Client {
 		} catch (IOException e) {
 			System.err.println("The connection to localhost experienced an I/O error.");
 			System.exit(1);
+		} finally {
+			if (in != null) in.close();
+			if (out != null) out.close();
+			if (clientSocket != null) clientSocket.close();
 		}
 	}
 	
 	private static boolean authenticate() throws IOException{
 		out.println("Username:" + currentUser);
-		out.println("Password:" + key);
+		toServer("Password:" + key);
 		String fromServer;
 		if ((fromServer = in.readLine()) != null && fromServer.length() > 9 
 				&& fromServer.substring(0, 9).equals("Welcome, ")){
