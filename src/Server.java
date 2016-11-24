@@ -5,14 +5,13 @@ import java.util.*;
 
 public class Server implements Runnable{
 
-
+	//Store username/password as an in-memory HashMap
 	private HashMap<String, String> db = new HashMap<String, String>();
 	/* userIDs are hardcoded for now, but for maximum 
-	/  security should be read in from an encrypted file */
+	/  security should be read in from an encrypted file 
 	private String[] userIDs = {"aj", "scott", "peter parker"};
 	//keys are 8 chars (128 bit) (first 8 chars are used in encryption)
-	private String[] keys = {"password", "dr. dick", "spiderman"};
-	//key[0] is intended as a joke. please don't take marks off for that =P
+	private String[] keys = {"password", "dr. dick", "spiderman"};*/
 
 	//Client server stuff
 	private Socket client;
@@ -25,7 +24,6 @@ public class Server implements Runnable{
 	}
 
 	public static void main(String args[]) throws Exception {
-		//System.loadLibrary()
 
 		ServerSocket serverSocket = new ServerSocket(16000);
 		System.out.println("Waiting for clients...");
@@ -122,9 +120,11 @@ public class Server implements Runnable{
 	}
 
 	private void readUsers(File _db){
-		
+		//fake it for now
+		db.put
 	}
 
+	//This is for debugging purposes only, and will list all users in memory
 	private void printusers(){
 		Iterator it = db.entrySet().iterator();
     	while (it.hasNext()) {

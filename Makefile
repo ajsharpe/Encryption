@@ -5,7 +5,7 @@ all:
 	$(shell export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`)
 	@echo $(LD_LIBRARY_PATH)
 	@echo "[WARN]***Setting LD_LIBRARY_PATH in the Makefile is not working. It must be set manually in the terminal before running the application."
-	@echo
+	@echo 
 clean:
 	rm -f *.class *.so src/Encryption.h
 
