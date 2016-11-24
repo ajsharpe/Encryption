@@ -91,6 +91,9 @@ public class Encryption {
 			char[] f = intToCharArray(encrypted[i]);
 			result += (char)f[0] + "" + (char)f[1]+ "" + (char)f[2] + "" + (char)f[3];
 		}
+
+		//BUGFIX: newline characters are throwing things off... change them to \0 instead!
+		result = result.replace("\n", "\0");
 		return result;
 	}
 
@@ -105,6 +108,10 @@ public class Encryption {
 
 	
 	private static int[] stringToIntArray(String encrypted){
+		//BUGFIX: newline characters are throwing things off... change them back from \0!
+		encrypted = encrypted.replace("\0", "\n");
+		
+
 		int[] result = new int[encrypted.length()/4];
 		for (int i=0, j=0; i < encrypted.length()-3; i+=4, j++){
 			char[] c = {(char)encrypted.charAt(i), (char)encrypted.charAt(i+1), 

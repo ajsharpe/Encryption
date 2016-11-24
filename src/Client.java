@@ -37,14 +37,15 @@ public class Client {
 			}
 			
 			//Infinite loop for I/O to/from server
-			while ((fromServer = in.readLine()) != null) {
-				System.out.println("Server: " + fromServer);
+			while (true) {
+				if ((fromServer = in.readLine()) != null){
+					System.out.println("Server: " + fromServer);
+				}
 				if (fromServer.length() > 5 && fromServer.substring(0,5).equals("Bye, "))
 					break;
-
-				fromUser = stdIn.readLine();
-				if (fromUser != null) {
-					System.out.println("Client: " + fromUser);
+				System.out.print("Client: ");
+				while( (fromUser = stdIn.readLine()) == null || fromUser.length() < 1);
+				if (fromUser != null && fromUser.length() > 0) {
 					toServer(fromUser);
 				}
 			}
@@ -75,7 +76,6 @@ public class Client {
 	
 	private static void toServer(String str){
 		String encryptedData = Encryption.encrypt(str, key);
-		System.out.println(str);
 		System.out.println("Encrypted: " + encryptedData + "\n");
 		out.println(encryptedData);
 	}

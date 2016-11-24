@@ -67,7 +67,7 @@ public class Server implements Runnable{
 				out.println(currentUser + " enter a command:");
 				if ((fromUser = in.readLine()) != null){
 					String decrypted = Encryption.decrypt(fromUser, currentKey);
-					System.out.println(currentUser + ": " + decrypted);
+					System.out.println(currentUser + ": " + decrypted + "\n");
 					if (decrypted.equals("end")){
 						out.println("Bye, "+ currentUser + "!");
 						currentUser = null;
@@ -115,12 +115,13 @@ public class Server implements Runnable{
 						&& decrypted.substring(0,9).equals("Password:")){
 					//set key
 					currentKey = decrypted.substring(9);
-					//sometimes it only sends half the key?
+					/*sometimes it only sends half the key?
 					if (currentKey.length() < 8 && (fromUser = in.readLine()) != null ){
 						encrypted = encrypted + "\n" + fromUser;
 						decrypted = Encryption.decrypt(encrypted, db.get(currentUser));
 						currentKey = decrypted.substring(9);
-					}
+					}*/
+					
 					//check the decrypted password against the database
 					if (currentKey.equals(db.get(currentUser))){
 						System.out.println("User " + currentUser + " connected.");
