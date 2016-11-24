@@ -36,6 +36,7 @@ public class Encryption {
 	public static String decrypt(String data, String key){
 		return decrypt(stringToIntArray(data),key);
 	}
+
 	public static String decrypt(int[] data, String key){
 		
 		int[] formattedKey = formatKey(key);
@@ -60,8 +61,7 @@ public class Encryption {
 		
 		//strip extra '\0' if it was added
 		int length = deciphertext.length();
-		if (deciphertext.charAt(length-1)==deciphertext.charAt(length-2)
-				&& deciphertext.charAt(length-1)=='\0'){
+		if (deciphertext.charAt(length-1)=='\0'){
 			deciphertext = deciphertext.substring(0, length-1);
 		}
 
@@ -82,11 +82,16 @@ public class Encryption {
 		return formattedKey;
 	}
 	
-	private static int charArrayToInt(char[] b) {
-		return   b[3] & 0xFF |
-				(b[2] & 0xFF) << 8 |
-				(b[1] & 0xFF) << 16 |
-				(b[0] & 0xFF) << 24;
+
+
+	//String and int array conversion
+	private static String intArrayToString(int[] encrypted){
+		String result = "";
+		for (int i = 0; i < encrypted.length; i++){
+			char[] f = intToCharArray(encrypted[i]);
+			result += (char)f[0] + "" + (char)f[1]+ "" + (char)f[2] + "" + (char)f[3];
+		}
+		return result;
 	}
 
 	private static char[] intToCharArray(int a){
@@ -97,15 +102,7 @@ public class Encryption {
 			(char) (a & 0xFF)
 		};
 	}
-		
-	private static String intArrayToString(int[] encrypted){
-		String result = "";
-		for (int i = 0; i < encrypted.length; i++){
-			char[] f = intToCharArray(encrypted[i]);
-			result += (char)f[0] + "" + (char)f[1]+ "" + (char)f[2] + "" + (char)f[3];
-		}
-		return result;
-	}
+
 	
 	private static int[] stringToIntArray(String encrypted){
 		int[] result = new int[encrypted.length()/4];
@@ -115,6 +112,13 @@ public class Encryption {
 			result[j] = charArrayToInt(c);
 		}
 		return result;	
+	}
+
+	private static int charArrayToInt(char[] b) {
+		return   b[3] & 0xFF |
+				(b[2] & 0xFF) << 8 |
+				(b[1] & 0xFF) << 16 |
+				(b[0] & 0xFF) << 24;
 	}
 	
 }

@@ -6,7 +6,7 @@ import java.util.*;
 public class Server implements Runnable{
 
 	//Store username/password as an in-memory HashMap
-	private HashMap<String, String> db = new HashMap<String, String>();
+	private static HashMap<String, String> db = new HashMap<String, String>();
 	/* userIDs are hardcoded for now, but for maximum 
 	/  security should be read in from an encrypted file 
 	private String[] userIDs = {"aj", "scott", "peter parker"};
@@ -26,6 +26,9 @@ public class Server implements Runnable{
 	public static void main(String args[]) throws Exception {
 
 		ServerSocket serverSocket = new ServerSocket(16000);
+		System.out.println("Reading User Database...");
+		readUsers(null);
+		printUsers();
 		System.out.println("Waiting for clients...");
 		try{
 			while (true) {
@@ -59,7 +62,7 @@ public class Server implements Runnable{
 				currentUser = null;
 			}
 
-
+			//Infinite loop for I/O to/from server
 			while(currentUser != null){
 				out.println(currentUser + " enter a command:");
 				if ((fromUser = in.readLine()) != null){
@@ -97,39 +100,53 @@ public class Server implements Runnable{
 	private boolean authenticate() throws IOException{
 		String fromUser;
 
+		//read username
 		if ((fromUser = in.readLine()) != null && fromUser.length() > 9 
 				&& fromUser.substring(0,9).equals("Username:")){
 			currentUser = fromUser.substring(9);
-			if (!db.containsKey(currentUser)){
-				return false;
-			} else {
-				System.out.println("User " + currentUser + " connected.");
-				return true;
+			if (!db.containsKey(currentUser)) return false;
+			
+			//check password
+			if ((fromUser = in.readLine()) != null){
+				String encrypted = fromUser;
+				String decrypted = Encryption.decrypt(fromUser, db.get(currentUser));
+				System.out.println(decrypted);
+				if (decrypted != null && decrypted.length() > 9 
+						&& decrypted.substring(0,9).equals("Password:")){
+					//set key
+					currentKey = decrypted.substring(9);
+					//sometimes it only sends half the key?
+					if (currentKey.length() < 8 && (fromUser = in.readLine()) != null ){
+						encrypted = encrypted + "\n" + fromUser;
+						decrypted = Encryption.decrypt(encrypted, db.get(currentUser));
+						currentKey = decrypted.substring(9);
+					}
+					//check the decrypted password against the database
+					if (currentKey.equals(db.get(currentUser))){
+						System.out.println("User " + currentUser + " connected.");
+						return true;
+					}
+				}
 			}
-			
-			
-			/*
-			if ((fromUser = in.readLine()) != null)
-				String decrypted = Encryption.decrypt(fromUser, currentKey);
-					fromUser.length() > 9 
-					&& fromUser.substring(0,9).equals("Password:")){
-				currentKey = fromUser.substring(9);
-			}*/
 		}
 		return false;
 	}
 
-	private void readUsers(File _db){
+	private static void readUsers(File _db){
 		//fake it for now
-		db.put
+		if (_db == null){
+			db.put("aj", "password");
+		} else {
+			//TODO: create encrypted csv file, read encrypted file line by line, 
+			// decrypt with master key (env variable?), and store csv in db
+			//*** add encrypted file to .gitignore, update readme
+		}
 	}
 
 	//This is for debugging purposes only, and will list all users in memory
-	private void printusers(){
-		Iterator it = db.entrySet().iterator();
-    	while (it.hasNext()) {
-        	Map.Entry entry = (Map.Entry)it.next();
-         	System.out.println("key is: "+ entry.getKey() + " & Value is: " + entry.getValue());
+	private static void printUsers(){
+    	for (Map.Entry<String, String> entry : db.entrySet()) {
+         	System.out.println(entry.getKey() + " : " + entry.getValue());
       }
 	}
 }

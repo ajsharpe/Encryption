@@ -18,6 +18,7 @@ public class Client {
         }
         currentUser = new String(args[0]);
         key = new String(args[1]);
+		System.out.println(currentUser + " : " + key);
         Socket clientSocket = null;
 		try {
 			//Initialize connection
@@ -44,7 +45,6 @@ public class Client {
 				fromUser = stdIn.readLine();
 				if (fromUser != null) {
 					System.out.println("Client: " + fromUser);
-					//out.println(fromUser);
 					toServer(fromUser);
 				}
 			}
@@ -65,8 +65,8 @@ public class Client {
 		out.println("Username:" + currentUser);
 		toServer("Password:" + key);
 		String fromServer;
-		if ((fromServer = in.readLine()) != null && fromServer.length() > 9 
-				&& fromServer.substring(0, 9).equals("Welcome, ")){
+		if ((fromServer = in.readLine()) != null)/* && fromServer.length() > 9 
+				&& fromServer.substring(0, 9).equals("Welcome, "))*/{
 			System.out.println(fromServer);
 			return true;
 		}
@@ -75,8 +75,8 @@ public class Client {
 	
 	private static void toServer(String str){
 		String encryptedData = Encryption.encrypt(str, key);
-		System.out.println("Encrypted: " + encryptedData);
-		out.println(encryptedData);//send);//Encryption.intArrayToString(encryptedData));
-		//b.clear();
+		System.out.println(str);
+		System.out.println("Encrypted: " + encryptedData + "\n");
+		out.println(encryptedData);
 	}
 }
