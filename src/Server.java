@@ -48,7 +48,7 @@ public class Server implements Runnable{
 
 	public void run() {
 		try{
-			out = new PrintWriter(client.getOutputStream(), true);
+			out = new PrintWriter(new OutputStreamWriter(client.getOutputStream()), true);
 			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
 			String fromServer;
@@ -67,21 +67,18 @@ public class Server implements Runnable{
 			while(currentUser != null){
 				out.println(currentUser + " enter a command:");
 				if ((fromUser = in.readLine()) != null){
-					while (fromUser != null) {
-						decrypted = Encryption.decrypt(fromUser, currentKey);
-						int len = decrypted.length();
-						if (len > 1 && decrypted.charAt(len-1) == '\0'){
-							decrypted = decrypted.substring(0, length-1);
-							break;
-						} else {
-							fromUser = in.readLine();
-						}
+					int i = 0;
+					while ((decrypted = Encryption.decrypt(fromUser, currentKey)) == null && i < 5){	
+						System.out.println(fromUser);
+						fromUser += '\n' + in.readLine();
+						i++;
 					}
+
 					System.out.println(currentUser + ": " + decrypted + "\n");
 					fromUser = "";
 					
 					
-					if (decrypted.equals("end")){
+					if (decrypted != null && decrypted.equals("end")){
 						out.println("Bye, "+ currentUser + "!");
 						System.out.println(currentUser + " disconnected.");
 						currentUser = null;
@@ -120,17 +117,15 @@ public class Server implements Runnable{
 			//check password
 			if ((fromUser = in.readLine()) != null){
 				String encrypted = fromUser;
-				String decrypted = Encryption.decrypt(fromUser, db.get(currentUser));
+				String decrypted = null;
+				while ((decrypted = Encryption.decrypt(fromUser, db.get(currentUser))) == null) {
+					fromUser += '\n' + in.readLine();
+				}
+				
 				if (decrypted != null && decrypted.length() > 9 
 						&& decrypted.substring(0,9).equals("Password:")){
 					//set key
 					currentKey = decrypted.substring(9);
-					/*sometimes it only sends half the key?
-					if (currentKey.length() < 8 && (fromUser = in.readLine()) != null ){
-						encrypted = encrypted + "\n" + fromUser;
-						decrypted = Encryption.decrypt(encrypted, db.get(currentUser));
-						currentKey = decrypted.substring(9);
-					}*/
 					int length = currentKey.length();
 					if (length > 1 && currentKey.charAt(length-1)=='\0'){
 						currentKey = currentKey.substring(0, length-1);
@@ -152,7 +147,8 @@ public class Server implements Runnable{
 		if (_db == null){
 			db.put("aj", "password");
 		} else {
-			//TODO: create encrypted csv file, read encrypted file line by line, 
+			//TODO: create encrypted csv file for users
+			// read encrypted file line by line, 
 			// decrypt with master key (env variable?), and store csv in db
 			//*** add encrypted file to .gitignore, update readme
 		}

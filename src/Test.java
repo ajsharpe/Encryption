@@ -11,10 +11,8 @@ public class Test {
         }
 
 		
-		String a="w'ef"; //TODO: This breaks everything for some strange reason
-		//w' works fine, so does w'e...
-		// but "w'ef" causes StringIndexOutOfBoundsException on the Server
-
+		//TODO: a single 'm' causes the server to get stuck in an infinite loop. investigate
+		String a="lm";
 		if (args.length > 0 && args[0] != null) {
 			a = new String(args[0]);
 		} else { 

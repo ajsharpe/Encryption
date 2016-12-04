@@ -3,9 +3,11 @@ import java.nio.*;
 
 public class Encryption {
 
-	//TODO: append \0 to all strings to null terminate similar to c, check for \0 on the server
-
 	public static String encrypt(String data, String key){
+
+		//Append extra '\0' to check for null termination
+		data += '\0';
+
 		//Append extra '\0' if data.length() is odd
 		if (data.length()%2 != 0){
 			data += '\0'; 
@@ -36,16 +38,19 @@ public class Encryption {
 
 	
 	public static String decrypt(String data, String key){
+		if (data == null || data.isEmpty()){
+			return null;
+		}
+
 		return decrypt(stringToIntArray(data),key);
 	}
 
-	public static String decrypt(int[] data, String key){
+	private static String decrypt(int[] data, String key){
 		
 		int[] formattedKey = formatKey(key);
 
 		String deciphertext = new String();
 		int[] tempData = {0,0};
-		//System.out.println("");
 		
 		//pass string 2 chars at a time to C decryption routine
 		for(int i=0; i<data.length-1; i+=2)
@@ -55,8 +60,6 @@ public class Encryption {
 			
 			System.loadLibrary("encryption");
 			int tempresult[] = decrypt(tempData, formattedKey);
-			//System.out.println(tempresult[0]);
-			//System.out.println(tempresult[1]);
 			deciphertext += (char)tempresult[0];
 			deciphertext += (char)tempresult[1];
 		}
@@ -65,6 +68,16 @@ public class Encryption {
 		int length = deciphertext.length();
 		if (length > 1 && deciphertext.charAt(length-1)=='\0'
 				&& deciphertext.charAt(length-2)=='\0'){
+			deciphertext = deciphertext.substring(0, length-1);
+			length = deciphertext.length();
+		}
+
+
+		//ensure string is null terminated, as \0 was added in first step of encryption
+		//if it isn't, we don't have the full message yet, so return null
+		if (length > 0 && deciphertext.charAt(length-1) != '\0'){
+			return null;
+		} else if (length > 0){
 			deciphertext = deciphertext.substring(0, length-1);
 		}
 
@@ -94,10 +107,8 @@ public class Encryption {
 			char[] f = intToCharArray(encrypted[i]);
 			result += (char)f[0] + "" + (char)f[1]+ "" + (char)f[2] + "" + (char)f[3];
 		}
-
-		//BUGFIX: newline characters are throwing things off... change them to \0 instead!
-		result = result.replace("\n", "\0");
-		return result;
+		//replace \r with \0 so println doesn't miss part of the message
+		return result.replace('\r', '\0');
 	}
 
 	private static char[] intToCharArray(int a){
@@ -111,9 +122,9 @@ public class Encryption {
 
 	
 	private static int[] stringToIntArray(String encrypted){
-		//BUGFIX: newline characters are throwing things off... change them back from \0!
-		encrypted = encrypted.replace("\0", "\n");
-		
+		//BUGFIX: \r characters are throwing things off... change them back from \0!
+		//replace \0 with \r to revert last step of encryption
+		encrypted = encrypted.replace('\0', '\r');
 
 		int[] result = new int[encrypted.length()/4];
 		for (int i=0, j=0; i < encrypted.length()-3; i+=4, j++){

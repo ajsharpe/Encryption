@@ -23,7 +23,7 @@ public class Client {
 		try {
 			//Initialize connection
 			clientSocket = new Socket(InetAddress.getByName("localhost"), 16000);
-			out = new PrintWriter(clientSocket.getOutputStream(), true);
+			out = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true);
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
@@ -45,7 +45,8 @@ public class Client {
 						fromServer.substring(0,5).equals("Bye, "))
 					break;
 				System.out.print("Client: ");
-				while( (fromUser = stdIn.readLine()) == null || fromUser.length() < 1);
+				while( (fromUser = stdIn.readLine()) == null || fromUser.isEmpty() 
+						|| fromUser.length() < 1);
 				if (fromUser != null && fromUser.length() > 0) {
 					toServer(fromUser);
 				}
@@ -77,8 +78,7 @@ public class Client {
 	}
 	
 	private static void toServer(String str){
-		String encryptedData = Encryption.encrypt(str+"\0", key);
-		System.out.println(str.length());
+		String encryptedData = Encryption.encrypt(str, key);
 		System.out.println("Encrypted: " + encryptedData + "\n");
 		out.println(encryptedData);
 	}
